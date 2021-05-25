@@ -18,6 +18,11 @@ pub async fn sss(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult 
     product[1] = ((a.powi(2)+c.powi(2)-b.powi(2))/(2.0*a*c)).acos()*180.0/PI;
     product[3] = a*b*(product[2]*PI/180.0).sin()/2.0;
 
+    if ((a+b)<c)||((a+c)<b)||((b+c)<a){
+        msg.channel_id.say(&ctx.http, "jestli takový trojúhelník narýsuješ, domluvím ti u Kučky jedničku :-)").await?;
+        Ok(())
+    }
+
     for i in 0..4_usize{
         product[i] = (product[i]*1000000.0).round()/1000000.0;
     }
@@ -30,6 +35,10 @@ pub async fn sss(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult 
 pub async fn sus(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
     let a = args.single::<f64>()?;
     let alpha = PI/180.0*(args.single::<f64>())?;
+    if alpha > PI{
+        msg.channel_id.say(&ctx.http, "ještě jsem neviděl trojúhelník s úhlem přes 180°, ve škole mi ho potom ukážeš").await?;
+        Ok(())
+    }
     let b = args.single::<f64>()?;
     let mut product = [0.0_f64;4];
     product[0] = (a.powi(2)+b.powi(2)-2.0*a*b*(alpha.cos())).sqrt();
@@ -48,8 +57,16 @@ pub async fn sus(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult 
 #[command]
 pub async fn usu(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
     let alpha = PI/180.0*(args.single::<f64>())?;
+    if alpha > PI{
+        msg.channel_id.say(&ctx.http, "ještě jsem neviděl trojúhelník s úhlem přes 180°, ve škole mi ho potom ukážeš").await?;
+        Ok(())
+    }
     let a = args.single::<f64>()?;
     let beta = PI/180.0*(args.single::<f64>())?;
+    if beta > PI{
+        msg.channel_id.say(&ctx.http, "ještě jsem neviděl trojúhelník s úhlem přes 180°, ve škole mi ho potom ukážeš").await?;
+        Ok(())
+    }
     let mut product = [0.0_f64;4];
     product[2] = PI-alpha-beta;
     product[1] = a/(product[2].sin())*(alpha.sin());
@@ -70,6 +87,10 @@ pub async fn ssu(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult 
     let a = args.single::<f64>()?;
     let b = args.single::<f64>()?;
     let alpha = PI/180.0*(args.single::<f64>())?;
+    if alpha > PI{
+        msg.channel_id.say(&ctx.http, "ještě jsem neviděl trojúhelník s úhlem přes 180°, ve škole mi ho potom ukážeš").await?;
+        Ok(())
+    }
     let mut product = [0.0_f64;4];
     product[2] = (b/a*(alpha.sin())).asin();
     product[1] = PI-alpha-product[2];
@@ -109,79 +130,79 @@ pub async fn right(ctx: &Context, msg: &Message, mut args: Args) -> CommandResul
     values[0] = args.single::<f64>()?;
     values[1] = args.single::<f64>()?;
     match (name1.as_str(), name2.as_str()){
-        ("a", "b") => {msg.channel_id.say(&ctx.http, format!("c = {0}\nα = {1}\nβ = {2}",
+        ("a", "b") => {msg.channel_id.say(&ctx.http, format!("c = {0}\nα = {1}°\nβ = {2}°",
             (values[0].powi(2)+values[1].powi(2)).sqrt(),
             (values[0]/values[1]).atan()*180.0/PI,
             (values[1]/values[0]).atan()*180.0/PI)).await?;()},
-        ("b", "a") => {msg.channel_id.say(&ctx.http, format!("c = {0}\nα = {2}\nβ = {1}",
+        ("b", "a") => {msg.channel_id.say(&ctx.http, format!("c = {0}\nα = {2}°\nβ = {1}°",
             (values[0].powi(2)+values[1].powi(2)).sqrt(),
             (values[0]/values[1]).atan()*180.0/PI,
             (values[1]/values[0]).atan()*180.0/PI)).await?;()},
-        ("a", "c") => {msg.channel_id.say(&ctx.http, format!("b = {0}\nα = {1}\nβ = {2}",
+        ("a", "c") => {msg.channel_id.say(&ctx.http, format!("b = {0}\nα = {1}°\nβ = {2}°",
             (-values[0].powi(2)+values[1].powi(2)).sqrt(),
             (values[0]/values[1]).asin()*180.0/PI,
             (values[0]/values[1]).acos()*180.0/PI)).await?;()},
-        ("c", "a") => {msg.channel_id.say(&ctx.http, format!("b = {0}\nα = {1}\nβ = {2}",
+        ("c", "a") => {msg.channel_id.say(&ctx.http, format!("b = {0}\nα = {1}°\nβ = {2}°",
             (values[0].powi(2)-values[1].powi(2)).sqrt(),
             (values[1]/values[0]).asin()*180.0/PI,
             (values[1]/values[0]).acos()*180.0/PI)).await?;()},
-        ("b", "c") => {msg.channel_id.say(&ctx.http, format!("a = {0}\nα = {2}\nβ = {1}",
+        ("b", "c") => {msg.channel_id.say(&ctx.http, format!("a = {0}\nα = {2}°\nβ = {1}°",
             (-values[0].powi(2)+values[1].powi(2)).sqrt(),
             (values[0]/values[1]).asin()*180.0/PI,
             (values[0]/values[1]).acos()*180.0/PI)).await?;()},
-        ("c", "b") => {msg.channel_id.say(&ctx.http, format!("a = {0}\nα = {2}\nβ = {1}",
+        ("c", "b") => {msg.channel_id.say(&ctx.http, format!("a = {0}\nα = {2}°\nβ = {1}°",
             (values[0].powi(2)-values[1].powi(2)).sqrt(),
             (values[1]/values[0]).asin()*180.0/PI,
             (values[1]/values[0]).acos()*180.0/PI)).await?;()},
-        ("alpha", "a") => {msg.channel_id.say(&ctx.http, format!("b = {1}\nc = {0}\nβ = {2}",
+        ("alpha", "a") => {msg.channel_id.say(&ctx.http, format!("b = {1}\nc = {0}\nβ = {2}°",
             values[1]/((values[0]/180.0*PI).sin()),
             values[1]/((values[0]/180.0*PI).tan()),
             90.0-values[0])).await?;()},
-        ("a", "alpha") => {msg.channel_id.say(&ctx.http, format!("b = {1}\nc = {0}\nβ = {2}",
+        ("a", "alpha") => {msg.channel_id.say(&ctx.http, format!("b = {1}\nc = {0}\nβ = {2}°",
             values[0]/((values[1]/180.0*PI).sin()),
             values[0]/((values[1]/180.0*PI).tan()),
             90.0-values[1])).await?;()},
-        ("beta", "b") => {msg.channel_id.say(&ctx.http, format!("a = {1}\nc = {0}\nα = {2}",
+        ("beta", "b") => {msg.channel_id.say(&ctx.http, format!("a = {1}\nc = {0}\nα = {2}°",
             values[1]/((values[0]/180.0*PI).sin()),
             values[1]/((values[0]/180.0*PI).tan()),
             90.0-values[0])).await?;()},
-        ("b", "beta") => {msg.channel_id.say(&ctx.http, format!("a = {1}\nc = {0}\nα = {2}",
+        ("b", "beta") => {msg.channel_id.say(&ctx.http, format!("a = {1}\nc = {0}\nα = {2}°",
             values[0]/((values[1]/180.0*PI).sin()),
             values[0]/((values[1]/180.0*PI).tan()),
             90.0-values[1])).await?;()},
         ("beta", "a") => {let alpha = 90.0-values[0];
-            msg.channel_id.say(&ctx.http, format!("b = {1}\nc = {0}\nα = {2}",
+            msg.channel_id.say(&ctx.http, format!("b = {1}\nc = {0}\nα = {2}°",
             values[1]/((alpha/180.0*PI).sin()),
             values[1]/((alpha/180.0*PI).tan()),
             alpha)).await?;()},
         ("a", "beta") => {let alpha = 90.0-values[1];
-            msg.channel_id.say(&ctx.http, format!("b = {1}\nc = {0}\nα = {2}",
+            msg.channel_id.say(&ctx.http, format!("b = {1}\nc = {0}\nα = {2}°",
             values[0]/((alpha/180.0*PI).sin()),
             values[0]/((alpha/180.0*PI).tan()),
             alpha)).await?;()},
         ("alpha", "b") => {let beta = 90.0-values[0];
-            msg.channel_id.say(&ctx.http, format!("a = {1}\nc = {0}\nα = {2}",
+            msg.channel_id.say(&ctx.http, format!("a = {1}\nc = {0}\nα = {2}°",
             values[1]/((beta/180.0*PI).sin()),
             values[1]/((beta/180.0*PI).tan()),
             beta)).await?;()},
         ("b", "alpha") => {let beta = 90.0-values[1];
-            msg.channel_id.say(&ctx.http, format!("a = {1}\nc = {0}\nα = {2}",
+            msg.channel_id.say(&ctx.http, format!("a = {1}\nc = {0}\nα = {2}°",
             values[0]/((beta/180.0*PI).sin()),
             values[0]/((beta/180.0*PI).tan()),
             beta)).await?;()},
-        ("c", "beta") => {msg.channel_id.say(&ctx.http, format!("a = {1}\nb = {0}\nα = {2}",
+        ("c", "beta") => {msg.channel_id.say(&ctx.http, format!("a = {1}\nb = {0}\nα = {2}°",
             values[0]*((values[1]/180.0*PI).sin()),
             values[0]*((values[1]/180.0*PI).cos()),
             90.0-values[1])).await?;()},
-        ("beta", "c") => {msg.channel_id.say(&ctx.http, format!("a = {1}\nb = {0}\nα = {2}",
+        ("beta", "c") => {msg.channel_id.say(&ctx.http, format!("a = {1}\nb = {0}\nα = {2}"°,
             values[1]*((values[0]/180.0*PI).sin()),
             values[1]*((values[0]/180.0*PI).cos()),
             90.0-values[0])).await?;()},
-        ("alpha", "c") => {msg.channel_id.say(&ctx.http, format!("a = {0}\nb = {1}\nα = {2}",
+        ("alpha", "c") => {msg.channel_id.say(&ctx.http, format!("a = {0}\nb = {1}\nα = {2}°",
             values[1]*((values[0]/180.0*PI).sin()),
             values[1]*((values[0]/180.0*PI).cos()),
             90.0-values[0])).await?;()},
-        ("c", "alpha") => {msg.channel_id.say(&ctx.http, format!("a = {0}\nb = {1}\nα = {2}",
+        ("c", "alpha") => {msg.channel_id.say(&ctx.http, format!("a = {0}\nb = {1}\nα = {2}°",
             values[0]*((values[1]/180.0*PI).sin()),
             values[0]*((values[1]/180.0*PI).cos()),
             90.0-values[1])).await?;()},
