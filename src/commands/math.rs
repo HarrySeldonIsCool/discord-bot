@@ -20,7 +20,7 @@ pub async fn sss(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult 
 
     if ((a+b)<c)||((a+c)<b)||((b+c)<a){
         msg.channel_id.say(&ctx.http, "jestli takový trojúhelník narýsuješ, domluvím ti u Kučky jedničku :-)").await?;
-        Ok(())
+        return Ok(())
     }
 
     for i in 0..4_usize{
@@ -37,7 +37,7 @@ pub async fn sus(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult 
     let alpha = PI/180.0*(args.single::<f64>())?;
     if alpha > PI{
         msg.channel_id.say(&ctx.http, "ještě jsem neviděl trojúhelník s úhlem přes 180°, ve škole mi ho potom ukážeš").await?;
-        Ok(())
+        return Ok(())
     }
     let b = args.single::<f64>()?;
     let mut product = [0.0_f64;4];
@@ -59,13 +59,13 @@ pub async fn usu(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult 
     let alpha = PI/180.0*(args.single::<f64>())?;
     if alpha > PI{
         msg.channel_id.say(&ctx.http, "ještě jsem neviděl trojúhelník s úhlem přes 180°, ve škole mi ho potom ukážeš").await?;
-        Ok(())
+        return Ok(())
     }
     let a = args.single::<f64>()?;
     let beta = PI/180.0*(args.single::<f64>())?;
     if beta > PI{
         msg.channel_id.say(&ctx.http, "ještě jsem neviděl trojúhelník s úhlem přes 180°, ve škole mi ho potom ukážeš").await?;
-        Ok(())
+        return Ok(())
     }
     let mut product = [0.0_f64;4];
     product[2] = PI-alpha-beta;
@@ -89,7 +89,7 @@ pub async fn ssu(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult 
     let alpha = PI/180.0*(args.single::<f64>())?;
     if alpha > PI{
         msg.channel_id.say(&ctx.http, "ještě jsem neviděl trojúhelník s úhlem přes 180°, ve škole mi ho potom ukážeš").await?;
-        Ok(())
+        return Ok(())
     }
     let mut product = [0.0_f64;4];
     product[2] = (b/a*(alpha.sin())).asin();
@@ -194,7 +194,7 @@ pub async fn right(ctx: &Context, msg: &Message, mut args: Args) -> CommandResul
             values[0]*((values[1]/180.0*PI).sin()),
             values[0]*((values[1]/180.0*PI).cos()),
             90.0-values[1])).await?;()},
-        ("beta", "c") => {msg.channel_id.say(&ctx.http, format!("a = {1}\nb = {0}\nα = {2}"°,
+        ("beta", "c") => {msg.channel_id.say(&ctx.http, format!("a = {1}\nb = {0}\nα = {2}°",
             values[1]*((values[0]/180.0*PI).sin()),
             values[1]*((values[0]/180.0*PI).cos()),
             90.0-values[0])).await?;()},
@@ -207,6 +207,32 @@ pub async fn right(ctx: &Context, msg: &Message, mut args: Args) -> CommandResul
             values[0]*((values[1]/180.0*PI).cos()),
             90.0-values[1])).await?;()},
         _ => {msg.channel_id.say(&ctx.http, format!("wtf, co to sakra je?")).await?;()},
+    }
+    Ok(())
+}
+
+#[command]
+pub async fn linear(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
+    let mut a = String::new();
+    let mut values = vec![];
+    'outer: loop{
+        match args.parse::<String>(){
+            Ok(i) => a.push_str(i.as_str()),
+            Err(_i) => break 'outer,
+        };
+        match args.single::<f64>(){
+            Ok(i) => values.push(i),
+            Err(_i) => (),
+        }
+    }
+    if (&a).as_bytes()[0] as char == '['{
+        msg.channel_id.say(&ctx.http, format!("f: y = {0}x {1:+}",-values[1]/values[0],values[1])).await?;
+    }
+    else if (&a).as_bytes()[0] as char == 'f'{
+        msg.channel_id.say(&ctx.http, format!("Px[{0}; 0], Py[0; {1}]",-values[1]/values[0],values[1])).await?;
+    }
+    else{
+        msg.channel_id.say(&ctx.http, format!("to neznám!!!")).await?;
     }
     Ok(())
 }
