@@ -58,7 +58,7 @@ impl EventHandler for Handler {
 }
 
 #[group]
-#[commands(sss, sus, usu, ssu, help, right)]
+#[commands(sss, sus, usu, ssu, help, right, linear)]
 struct General;
 
 #[tokio::main]

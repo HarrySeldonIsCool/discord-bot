@@ -6,6 +6,7 @@ use serenity::framework::standard::{
 };
 use std::f64::consts::PI;
 use std::string::String;
+use scan_fmt::*;
 
 #[command]
 pub async fn sss(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
@@ -118,7 +119,11 @@ pub async fn help(ctx: &Context, msg: &Message) -> CommandResult {
     vedle toho je tu ještě příkaz *?right, který přijme dva argumenty označující jména zadaných hodnot a dva na dané hodnoty, tedy například:
     *?right a c 3 5
     *?right alpha b 56.3 12
-    hlavně pozor na desetinnou tečku pro všechny příkazy a anglický spelling příkazů.")).await?;
+    hlavně pozor na desetinnou tečku pro všechny příkazy a anglický spelling příkazů.\n
+    nyní jsem přidal ještě *?linear, který má dvě formy vstupu, nejlépe to půjde ukázat příkladem\n
+    *?linear [-0.75, 0.5], [-1, 1]\n
+    *?linear f: y = 5x - 0.5\n
+    mimochodem, můj github je https://github.com/HarrySeldonIsCool/discord-bot")).await?;
     Ok(())
 }
 
@@ -212,27 +217,27 @@ pub async fn right(ctx: &Context, msg: &Message, mut args: Args) -> CommandResul
 }
 
 #[command]
-pub async fn linear(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
-    let mut a = String::new();
-    let mut values = vec![];
-    'outer: loop{
-        match args.parse::<String>(){
-            Ok(i) => a.push_str(i.as_str()),
-            Err(_i) => break 'outer,
-        };
-        match args.single::<f64>(){
-            Ok(i) => values.push(i),
-            Err(_i) => (),
+pub async fn linear(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
+    let input = String::from(args.message());
+    if let Ok((a, b)) = scan_fmt!(input.as_str(),"f: y = {}x + {}", f64, f64) {
+        msg.channel_id.say(&ctx.http, format!("Px[{0}, 0], Py[0, {1}]", -b/a, b)).await?;
+    }
+    else if let Ok((a, b)) = scan_fmt!(input.as_str(),"f: y = {}x - {}", f64, f64) {
+        msg.channel_id.say(&ctx.http, format!("Px[{0}, 0], Py[0, {1}]", b/a, -b)).await?;
+    }
+    else if let Ok((a, b, c, d)) = scan_fmt!(input.as_str(),"[{}, {}], [{}, {}]", f64, f64, f64, f64) {
+        let result =
+        if b-a*(b-d)/(a-c) >= 0.0{
+            format!("f: y = {0}x + {1}", (b-d)/(a-c), b-a*(b-d)/(a-c))
         }
+        else{
+            format!("f: y = {0}x - {1}", (b-d)/(a-c), -b+a*(b-d)/(a-c))
+        };
+        msg.channel_id.say(&ctx.http, result).await?;
     }
-    if (&a).as_bytes()[0] as char == '['{
-        msg.channel_id.say(&ctx.http, format!("f: y = {0}x {1:+}",-values[1]/values[0],values[1])).await?;
+    else {
+        msg.channel_id.say(&ctx.http, format!("jestli je to jen zvláštní uspořádání mezer či co, přidej mi na github pull reguest, jinak si to přepiš do normální podoby")).await?;
     }
-    else if (&a).as_bytes()[0] as char == 'f'{
-        msg.channel_id.say(&ctx.http, format!("Px[{0}; 0], Py[0; {1}]",-values[1]/values[0],values[1])).await?;
-    }
-    else{
-        msg.channel_id.say(&ctx.http, format!("to neznám!!!")).await?;
-    }
+
     Ok(())
 }
