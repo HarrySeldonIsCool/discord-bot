@@ -7,6 +7,7 @@ use serenity::framework::standard::{
 use std::f64::consts::PI;
 use std::string::String;
 use scan_fmt::*;
+//use super::calcstructs::*;
 
 #[command]
 pub async fn sss(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
@@ -218,14 +219,22 @@ pub async fn right(ctx: &Context, msg: &Message, mut args: Args) -> CommandResul
 
 #[command]
 pub async fn linear(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
-    let input = String::from(args.message());
-    if let Ok((a, b)) = scan_fmt!(input.as_str(),"f: y = {}x + {}", f64, f64) {
+    let input2 = String::from(args.message());
+    let mut input = input2.clone();
+    let mut index = 0usize; 
+    for (i, x) in input2.char_indices(){
+        if x == ' '{
+            input.remove(i-index);
+            index += 1;
+        }
+    }
+    if let Ok((a, b)) = scan_fmt!(input.as_str(),"f:y={}x+{}", f64, f64) {
         msg.channel_id.say(&ctx.http, format!("Px[{0}, 0], Py[0, {1}]", -b/a, b)).await?;
     }
-    else if let Ok((a, b)) = scan_fmt!(input.as_str(),"f: y = {}x - {}", f64, f64) {
+    else if let Ok((a, b)) = scan_fmt!(input.as_str(),"f:y={}x-{}", f64, f64) {
         msg.channel_id.say(&ctx.http, format!("Px[{0}, 0], Py[0, {1}]", b/a, -b)).await?;
     }
-    else if let Ok((a, b, c, d)) = scan_fmt!(input.as_str(),"[{}, {}], [{}, {}]", f64, f64, f64, f64) {
+    else if let Ok((a, b, c, d)) = scan_fmt!(input.as_str(),"[{},{}],[{},{}]", f64, f64, f64, f64) {
         let result =
         if b-a*(b-d)/(a-c) >= 0.0{
             format!("f: y = {0}x + {1}", (b-d)/(a-c), b-a*(b-d)/(a-c))
@@ -234,6 +243,12 @@ pub async fn linear(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
             format!("f: y = {0}x - {1}", (b-d)/(a-c), -b+a*(b-d)/(a-c))
         };
         msg.channel_id.say(&ctx.http, result).await?;
+    }
+    else if let Ok((a, b)) = scan_fmt!(input.as_str(),"f(x)={}x+{}", f64, f64) {
+        msg.channel_id.say(&ctx.http, format!("Px[{0}, 0], Py[0, {1}]", -b/a, b)).await?;
+    }
+    else if let Ok((a, b)) = scan_fmt!(input.as_str(),"f(x)={}x-{}", f64, f64) {
+        msg.channel_id.say(&ctx.http, format!("Px[{0}, 0], Py[0, {1}]", b/a, -b)).await?;
     }
     else {
         msg.channel_id.say(&ctx.http, format!("jestli je to jen zvláštní uspořádání mezer či co, přidej mi na github pull reguest, jinak si to přepiš do normální podoby")).await?;
