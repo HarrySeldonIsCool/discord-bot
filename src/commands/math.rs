@@ -7,7 +7,6 @@ use serenity::framework::standard::{
 use std::f64::consts::PI;
 use std::string::String;
 use scan_fmt::*;
-//use super::calcstructs::*;
 
 #[command]
 pub async fn sss(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
