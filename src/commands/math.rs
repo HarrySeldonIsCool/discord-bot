@@ -255,3 +255,160 @@ pub async fn linear(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
 
     Ok(())
 }
+
+#[command]
+pub async fn nad(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
+    let mut a = args.single::<u32>()?;
+    let mut b = args.single::<u32>()?;
+    let c = a*b;
+    let mut d;
+    while b != 0 {
+        d = a % b;
+        a = b;
+        b = d;
+    }
+    msg.channel_id.say(&ctx.http, format!("n = {0}, D = {1}", c/a, a)).await?;
+
+    Ok(())
+}
+
+#[command]
+pub async fn pol(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
+    let mut input2 = String::from(args.message());
+    input2.push_str("x0");
+    let mut input = vec![];
+    if let Some(i) = input2.get(..1){
+        input.push(match i {
+            "-" => -1.0,
+            _ => 1.0
+        })
+    }
+    let mut buffer = String::new();
+    let mut last = (0, false);
+    let numbers = String::from("0123456789.");
+    for (i, x) in input2.char_indices(){
+        if let Some(_) = numbers.find(x){
+            buffer.push(x);
+            last.1 = false;
+        }
+        else if x == 'x'{
+            match buffer.parse::<f32>(){
+                Ok(n) => {let len = input.len();
+                        input[len-1] *= n;
+                    },
+                Err(_) => match buffer.parse::<u32>(){
+                    Ok(n) => {let len = input.len();
+                            input[len-1] *= n as f32;
+                        },
+                    Err(_) => {msg.channel_id.say(&ctx.http, format!("wtf, prepis si to!!!>:(")).await?;},
+                }
+            }
+            buffer.clear();
+            last.1 = true;
+        }
+        else if x == '+'{
+            input.push(1.0);
+            if last.1 {buffer.push('1');}
+            match buffer.parse::<u32>(){
+                Ok(n) => {let len = input.len();
+                    if last.0-n > 1{
+                        for _ in (n+1)..last.0{
+                            input.insert(len-2,0.0);
+                        }
+                    }
+                    last.0 = n;
+                },
+                Err(_) => {msg.channel_id.say(&ctx.http, format!("wtf, prepis si to!!!>:(")).await?;},
+            }
+            buffer.clear();
+            last.1 = false;
+        }
+        else if x == '-'{
+            input.push(-1.0);
+            if last.1 {buffer.push('1');}
+            match buffer.parse::<u32>(){
+                Ok(n) => {let len = input.len();
+                    if last.0-n > 1{
+                        for _ in (n+1)..last.0{
+                            msg.channel_id.say(&ctx.http, format!("{}", input2)).await?;
+                            input.insert(len-2,0.0);
+                        }
+                    }
+                    last.0 = n;
+                },
+                Err(_) => {msg.channel_id.say(&ctx.http, format!("wtf, prepis si to!!!>:(")).await?;},
+            }
+            buffer.clear();
+            last.1 = false;
+        }
+    }
+    
+    match buffer.parse::<u32>(){
+        Ok(n) => {let len = input.len();
+            if last.0-n > 1{
+                for _ in (n+1)..last.0{
+                    input.insert(len-1,0.0);
+                }
+            }
+            last.0 = n;
+        },
+        Err(_) => {msg.channel_id.say(&ctx.http, format!("wtf, prepis si to!!!>:(")).await?;},
+    }
+    msg.channel_id.say(&ctx.http, format!("{:?}", input)).await?;
+
+    Ok(())
+}
+
+
+
+#[command]
+pub async fn base(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
+    let from = args.single::<u32>()?;
+    let to = args.single::<u32>()?;
+    let what = args.single_quoted::<String>()?;
+    let mut base = 0;
+    let mut negative = false;
+
+    for (i, x) in what.char_indices(){
+        base += match x{
+            '0' => 0,
+            '1' => 1,
+            '2' => 2,
+            '3' => 3,
+            '4' => 4,
+            '5' => 5,
+            '6' => 6,
+            '7' => 7,
+            '8' => 8,
+            '9' => 9,
+            'a' => 10,
+            'b' => 11,
+            'c' => 12,
+            'd' => 13,
+            'e' => 14,
+            'f' => 15,
+            '-' => {negative = true;0},
+            _ => {msg.channel_id.say(&ctx.http, format!("wtf, to neumim!!!>:(")).await?;0}
+        };
+        base *= from;
+    }
+
+    base /= from;
+    
+    msg.channel_id.say(&ctx.http, format!("base 10: {}", base)).await?;
+
+    let mut out = String::new();
+
+    for i in 1..((base as f32).log(to as f32).floor() as u32 + 2){
+        let x = base % to;
+        out.insert_str(0,&format!("{:X}",x));
+        base -= x;
+        base /= to;
+    }
+
+    if negative {out.insert(0,'-');}
+
+    msg.channel_id.say(&ctx.http, format!("base {}: {}", to, out)).await?;
+
+    Ok(())
+}
