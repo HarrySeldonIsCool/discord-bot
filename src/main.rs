@@ -58,7 +58,7 @@ impl EventHandler for Handler {
 }
 
 #[group]
-#[commands(sss, sus, usu, ssu, help, right, linear, nad, pol, base)]
+#[commands(sss, sus, usu, ssu, help, right, linear, base, calc)]
 struct General;
 
 #[tokio::main]
@@ -89,7 +89,7 @@ async fn main() {
     let framework = StandardFramework::new()
         .configure(|c| c
                    .owners(owners)
-                   .prefix("*?"))
+                   .prefix("--"))
         .group(&GENERAL_GROUP);
 
     let mut client = Client::builder(&token)
