@@ -36,6 +36,7 @@ use tracing_subscriber::{
 
 use commands::{
     math::*,
+    calc::*,
 };
 
 pub struct ShardManagerContainer;
