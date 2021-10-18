@@ -4,7 +4,7 @@ use serenity::framework::standard::{
     Args, CommandResult,
     macros::command,
 };
-use std::f64::consts::{PI, E};
+use std::f64::consts::PI;
 use std::string::String;
 use scan_fmt::*;
 
@@ -264,7 +264,7 @@ pub async fn base(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult
     let mut base = 0;
     let mut negative = false;
 
-    for (i, x) in what.char_indices(){
+    for (_, x) in what.char_indices(){
         base += match x{
             '0' => 0,
             '1' => 1,
@@ -294,7 +294,7 @@ pub async fn base(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult
 
     let mut out = String::new();
 
-    for i in 1..((base as f32).log(to as f32).floor() as u32 + 2){
+    for _i in 1..((base as f32).log(to as f32).floor() as u32 + 2){
         let x = base % to;
         out.insert_str(0,&format!("{:X}",x));
         base -= x;
