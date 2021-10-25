@@ -71,31 +71,31 @@ impl Arg{
     fn string(&self) -> String{
         match self{
             Stri(some) => some.to_string(),
-            _ => panic!(),
+            _ => panic!("expected string"),
         }
     }
     fn number(&self) -> f64{
         match self{
             Number(some) => *some,
-            _ => panic!(),
+            _ => panic!("expected number"),
         }
     }
     fn polynomial(&self) -> polynomial::Polynomial{
         match self{
             Polynomial(some) => some.to_vec(),
-            _ => panic!(),
+            _ => panic!("expected polynomial"),
         }
     }
     fn array(&self) -> Vec<Arg>{
         match self{
             Array(some) => some.to_vec(),
-            _ => panic!(),
+            _ => panic!("expected array"),
         }
     }
     fn mnozina(&self) -> mnozina::Mnozina{
         match self{
             Mnozina(some) => some.clone(),
-            _ => panic!(),
+            _ => panic!("expected mnozina"),
         }
     }
 }
@@ -291,6 +291,7 @@ pub async fn calc(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
             '[' => {input2.insert_str(i+1, "((((((((");shift += 8;},
             ',' => {input2.insert_str(i, "))))))");input2.insert_str(i+7,"((((((");shift += 12;},
             ':' => {input2.insert_str(i, ")");input2.insert_str(i+2,"(");shift += 2;},
+            '=' => {}
             '\"' => {is_str = true;},
             _ => (),
         }

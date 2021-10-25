@@ -161,6 +161,11 @@ impl BitAnd for Mnozina{
                     if let Some(_) = rhs.0.iter().find(|som| Single(*a) == **som){
                         out.push(Single(*a));
                     }
+                    else if let Some(_) = rhs.0.iter().find(|som| if let Interval(b) = **som{
+                        b.domain >= Domain::dom(*a) && (*a > b.down.0 || (*a == b.down.0 && b.down.1)) && (*a < b.up.0 || (*a == b.up.0 && b.up.1))
+                    }else{false}){
+                        out.push(Single(*a));
+                    }
                 },
                 Interval(a) => {
                     if let Some(Interval(b)) = rhs.0.iter().find(|som| match **som{
@@ -179,11 +184,16 @@ impl BitAnd for Mnozina{
                             }){
                         out.push(Single(b.down.max(a.down).0));
                     }
+                    else if let Some(Single(b)) = rhs.0.iter().find(|som| if let Single(b) = **som{
+                        a.domain >= Domain::dom(b) && (b > a.down.0 || (b == a.down.0 && a.down.1)) && (b < a.up.0 || (b == a.up.0 && a.up.1))
+                    }else{false}){
+                        out.push(Single(*b));
+                    }
                 },
             }
         }
 
-        Mnozina(out)
+        Mnozina(out).simplify()
     }
 }
 
@@ -198,8 +208,10 @@ impl Sub for Mnozina{
 
         for x in iterable.iter(){
             match x{
-                Single(a) => {
-                    if let Some(_) = rhs.0.iter().find(|som| Single(*a) == **som){}
+                Single(a) => {if let Some(_) = rhs.0.iter().find(|som| match **som{
+                        Single(b) => b == *a,
+                        Interval(b) => b.domain >= Domain::dom(*a) && (b.down.0 < *a || (b.down.0 == *a && b.down.1)) && (b.up.0 > *a || (b.up.0 == *a && b.up.1))
+                    }) {}
                     else{
                         out.push(Single(*a));
                     }
@@ -354,12 +366,13 @@ impl Mnozina{
             up: NumbABr(std::f64::INFINITY, false),
             down: NumbABr(1.0, true),
         })])
-    }
+    }x
     fn empty() -> Self{
         Mnozina(vec![])
     }
-    fn simplify(&self) -> Self{
-        (*self).clone() | Self::empty()
+    fn simplify(&mut self) -> Self{
+        self = (*self).clone() | Self::empty();
+        self
     }
     pub fn interval(from: (f64, bool), to: (f64, bool)) -> Mnozina{
         Mnozina(vec![MnozinaC::Interval(IntervalS{

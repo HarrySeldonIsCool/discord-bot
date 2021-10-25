@@ -77,3 +77,12 @@ pub fn pol(input1: &String) -> Vec<f64> {
     }
     input
 }
+
+pub fn eval(a: &Polynomial, x: f64) -> f64{
+    let mut out = 0.0;
+    for som in a.iter(){
+        out *= x;
+        out += som;
+    }
+    out
+}
